@@ -34,7 +34,7 @@ export interface UserAxios extends UserCommon {
 export interface UserState {
   users: User[];
   filteredUserIds: string[];
-  search: "";
+  search: string;
   loading: boolean;
 }
 

@@ -17,12 +17,15 @@ export const userSlice = createSlice({
     searchUser: (state, actions) => {
       const searchTerm = actions.payload;
 
-      state.search = searchTerm;
-
       if (!searchTerm)
         state.filteredUserIds = state.users.map((user) => user.uuid);
 
-      state.filteredUserIds = getUserIdsBySearchTerm(state.users, searchTerm);
+      state.filteredUserIds = getUserIdsBySearchTerm(
+        state.users,
+        searchTerm.toLowerCase()
+      );
+
+      state.search = searchTerm;
     },
     createUser: (state, action: PayloadAction<User>) => {
       checkEmail(state.users, action.payload.email);
@@ -32,7 +35,7 @@ export const userSlice = createSlice({
       if (state.search) {
         state.filteredUserIds = getUserIdsBySearchTerm(
           state.users,
-          state.search
+          state.search.toLowerCase()
         );
 
         return;

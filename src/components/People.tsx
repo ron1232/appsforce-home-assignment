@@ -42,7 +42,7 @@ const People = () => {
           <StyledInputBase
             placeholder="Search…"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value.toLowerCase())}
+            onChange={(e) => setSearchTerm(e.target.value)}
             inputProps={{ "aria-label": "search" }}
           />
         </Search>
