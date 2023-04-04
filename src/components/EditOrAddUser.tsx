@@ -49,6 +49,7 @@ const EditOrAddUser: React.FC<EditOrAddUserProps> = ({
       name: { state: setName, error: setNameError },
       email: { state: setEmail, error: setEmailError },
       location: { state: setLocation, error: setLocationError },
+
       // If Creating new user:
       ...(!uuid && { picture: { state: setPicture, error: setPictureError } }),
     };
@@ -77,7 +78,7 @@ const EditOrAddUser: React.FC<EditOrAddUserProps> = ({
       valid = false;
     }
 
-    // If new user and picture is not an image url:
+    // If new user and picture not ending with image extension
     if (!uuid && !/\.(gif|jpe?g|tiff?|png|webp|bmp)$/i.test(picture)) {
       setPictureError("Picture must be an image url");
       valid = false;
