@@ -1,6 +1,14 @@
 import { useState } from "react";
 import { User as PersonProps } from "../interfaces";
 import EditOrAddUser from "./EditOrAddUser";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import CardMedia from "@mui/material/CardMedia";
+import { Button, CardActionArea, CardActions } from "@mui/material";
+import Label from "./Label";
+import Text from "./Text";
+import { Seperator, TopCard } from "./StyledComponents";
+import DeleteUser from "./DeleteUser";
 
 const Person: React.FC<PersonProps> = ({
   email,
@@ -10,18 +18,50 @@ const Person: React.FC<PersonProps> = ({
   picture,
 }) => {
   const [openEditModal, setOpenEditModal] = useState(false);
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
 
   return (
     <>
-      <div>
-        <div>{name}</div>
-        <div>{email}</div>
-        <img src={picture} alt="" />
-        <div>{location}</div>
-        <div>{uuid}</div>
-        <button onClick={() => setOpenEditModal(true)}>Edit</button>
-        <hr />
-      </div>
+      <Card sx={{ width: 400 }}>
+        <CardActionArea>
+          <TopCard>
+            <CardMedia
+              style={{ borderRadius: 20 }}
+              component="img"
+              image={picture}
+              alt="green iguana"
+            />
+          </TopCard>
+          <Seperator />
+          <CardContent>
+            <Label label="Name:" />
+            <Text text={name} />
+            <Label label="Email:" />
+            <Text text={email} />
+            <Label label="Location:" />
+            <Text text={location} />
+            <Label label="UUID:" />
+            <Text text={uuid} />
+          </CardContent>
+        </CardActionArea>
+        <Seperator />
+        <CardActions>
+          <Button
+            size="small"
+            color="info"
+            onClick={() => setOpenEditModal(true)}
+          >
+            Edit
+          </Button>
+          <Button
+            size="small"
+            color="warning"
+            onClick={() => setOpenDeleteModal(true)}
+          >
+            Delete
+          </Button>
+        </CardActions>
+      </Card>
       {openEditModal && (
         <EditOrAddUser
           setOpen={setOpenEditModal}
@@ -29,6 +69,14 @@ const Person: React.FC<PersonProps> = ({
           email={email}
           location={location}
           name={name}
+          uuid={uuid}
+        />
+      )}
+
+      {openDeleteModal && (
+        <DeleteUser
+          setOpen={setOpenDeleteModal}
+          open={openDeleteModal}
           uuid={uuid}
         />
       )}

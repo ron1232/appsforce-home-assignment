@@ -2,19 +2,29 @@ import Person from "./Person";
 import { useEffect, useState } from "react";
 import { fetchUsers } from "../redux/async-actions/userAsyncActions";
 import { useAppDispatch, useAppSelector } from "../redux/store";
-import SearchFilter from "./SearchFilter";
 import { searchUser } from "../redux/slices/userSlice";
+import Button from "@mui/material/Button";
+import TopMenu from "./TopMenu";
+import Typography from "@mui/material/Typography";
+import CircularProgress from "@mui/material/CircularProgress";
 import EditOrAddUser from "./EditOrAddUser";
+import {
+  BottomSection,
+  CardsList,
+  LoadingWrapper,
+  Search,
+  StyledInputBase,
+  TopTitle,
+} from "./StyledComponents";
 
 const People = () => {
   const dispatch = useAppDispatch();
   const [openCreateUserModal, setOpenCreateUserModal] = useState(false);
 
-  const users = useAppSelector((state) => state.userReducer.users);
-
-  const filteredUserIds = useAppSelector(
-    (state) => state.userReducer.filteredUserIds
+  const { filteredUserIds, loading, users } = useAppSelector(
+    (state) => state.userReducer
   );
+
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
@@ -22,26 +32,52 @@ const People = () => {
   }, [searchTerm]);
 
   useEffect(() => {
-    // Fetch All Users
     dispatch(fetchUsers());
   }, []);
 
   return (
     <>
-      <SearchFilter
-        value={searchTerm}
-        onChange={(value) => setSearchTerm(value.toLowerCase())}
-      />
-      {users
-        .filter((user) => {
-          return filteredUserIds.includes(user.uuid);
-        })
-        .map((user) => (
-          <Person key={user.uuid} {...user} />
-        ))}
-      <button onClick={() => setOpenCreateUserModal(true)}>
-        Create new user
-      </button>
+      <TopMenu>
+        <Search>
+          <StyledInputBase
+            placeholder="Search…"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value.toLowerCase())}
+            inputProps={{ "aria-label": "search" }}
+          />
+        </Search>
+      </TopMenu>
+      <TopTitle>
+        <Typography fontSize={35}>List Of Users:</Typography>
+      </TopTitle>
+      <CardsList>
+        {loading ? (
+          <LoadingWrapper>
+            <CircularProgress size={100} disableShrink />
+          </LoadingWrapper>
+        ) : (
+          <>
+            {users
+              .filter((user) => {
+                return filteredUserIds.includes(user.uuid);
+              })
+              .map((user) => (
+                <Person key={user.uuid} {...user} />
+              ))}
+          </>
+        )}
+      </CardsList>
+      {!loading && (
+        <BottomSection>
+          <Button
+            onClick={() => setOpenCreateUserModal(true)}
+            variant="contained"
+            color="primary"
+          >
+            Create new user +
+          </Button>
+        </BottomSection>
+      )}
       {openCreateUserModal && (
         <EditOrAddUser
           setOpen={setOpenCreateUserModal}

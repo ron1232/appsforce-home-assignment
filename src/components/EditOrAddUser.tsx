@@ -1,14 +1,17 @@
 import { Dialog } from "@mui/material";
-import Box from "@mui/material/Box";
+import { Button } from "@mui/material";
+import { useState } from "react";
 import { useAppDispatch } from "../redux/store";
 import { createUser, editUser } from "../redux/slices/userSlice";
 import { v4 as uuidv4 } from "uuid";
-import { useState } from "react";
+import ErrorField from "./ErrorField";
+import { Form, StyledTextField } from "./StyledComponents";
 
 interface FieldForState {
   name: string;
   email: string;
   location: string;
+  picture?: string;
 }
 
 interface EditOrAddUserProps {
@@ -29,7 +32,7 @@ const EditOrAddUser: React.FC<EditOrAddUserProps> = ({
   uuid,
 }) => {
   const [name, setName] = useState(givenName || "");
-  const [nameError, setNameError] = useState(givenName || "");
+  const [nameError, setNameError] = useState("");
   const [email, setEmail] = useState(givenEmail || "");
   const [emailError, setEmailError] = useState("");
   const [location, setLocation] = useState(givenLocation || "");
@@ -37,6 +40,7 @@ const EditOrAddUser: React.FC<EditOrAddUserProps> = ({
 
   // New User
   const [picture, setPicture] = useState("");
+  const [pictureError, setPictureError] = useState("");
 
   const dispatch = useAppDispatch();
 
@@ -45,10 +49,11 @@ const EditOrAddUser: React.FC<EditOrAddUserProps> = ({
       name: { state: setName, error: setNameError },
       email: { state: setEmail, error: setEmailError },
       location: { state: setLocation, error: setLocationError },
+      ...(!uuid && { picture: { state: setPicture, error: setPictureError } }),
     };
 
-    fieldForState[field].state(value);
-    fieldForState[field].error("");
+    fieldForState[field]?.state(value);
+    fieldForState[field]?.error("");
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -66,56 +71,97 @@ const EditOrAddUser: React.FC<EditOrAddUserProps> = ({
       valid = false;
     }
 
-    if (!valid) return;
-
-    // edit mode
-    if (uuid && name && location && email) {
-      dispatch(editUser({ email, location, name, uuid }));
-      return setOpen(false);
+    if (!location.length) {
+      setLocationError("Location field can't be empty");
+      valid = false;
     }
 
-    // create mode
-    dispatch(createUser({ email, location, name, picture, uuid: uuidv4() }));
-    return setOpen(false);
+    // If new user and picture is not an image url:
+    if (!uuid && !/\.(gif|jpe?g|tiff?|png|webp|bmp)$/i.test(picture)) {
+      setPictureError("Picture must be an image url");
+      valid = false;
+    }
+
+    if (!valid) return;
+
+    // Edit mode
+    if (uuid && name && location && email) {
+      try {
+        dispatch(editUser({ email, location, name, uuid }));
+        return setOpen(false);
+      } catch (error) {
+        setEmailError("Email already exists");
+      }
+    }
+
+    // Create mode
+    try {
+      dispatch(createUser({ email, location, name, picture, uuid: uuidv4() }));
+      return setOpen(false);
+    } catch (error) {
+      setEmailError("Email already exists");
+    }
   };
 
   return (
     <Dialog open={open} onClose={() => setOpen(false)}>
-      <div>
-        <form
-          style={{ display: "flex", flexDirection: "column" }}
-          onSubmit={handleSubmit}
-          noValidate
-        >
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setValue(e.target.value, "name")}
+      <Form noValidate onSubmit={handleSubmit}>
+        {nameError && <ErrorField text={nameError} />}
+        <StyledTextField
+          label="Name"
+          variant="filled"
+          required
+          value={name}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setValue(e.target.value, "name")
+          }
+        />
+        {emailError && <ErrorField text={emailError} />}
+        <StyledTextField
+          label="Email"
+          type="email"
+          variant="filled"
+          required
+          value={email}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setValue(e.target.value, "email")
+          }
+        />
+        {locationError && <ErrorField text={locationError} />}
+        <StyledTextField
+          label="Location"
+          variant="filled"
+          required
+          value={location}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setValue(e.target.value, "location")
+          }
+        />
+        {pictureError && <ErrorField text={pictureError} />}
+        {!uuid && (
+          <StyledTextField
+            label="Picture"
+            variant="filled"
+            required
+            value={picture}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setValue(e.target.value, "picture")
+            }
           />
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setValue(e.target.value, "email")}
-          />
-          <input
-            type="text"
-            value={location}
-            onChange={(e) => setValue(e.target.value, "location")}
-          />
-          {/* Create Mode */}
-          {!uuid && (
-            <input
-              type="text"
-              value={picture}
-              onChange={(e) => setPicture(e.target.value)}
-            />
-          )}
-
-          {/* Save Cancel Button */}
-          <button>Save</button>
-          <button onClick={() => setOpen(false)}>Cancel</button>
-        </form>
-      </div>
+        )}
+        <div>
+          <Button
+            onClick={() => setOpen(false)}
+            variant="contained"
+            style={{ marginRight: "1rem" }}
+          >
+            Cancel
+          </Button>
+          <Button variant="contained" color="primary" type="submit">
+            Save
+          </Button>
+        </div>
+      </Form>
     </Dialog>
   );
 };

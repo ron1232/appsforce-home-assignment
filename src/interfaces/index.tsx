@@ -35,6 +35,7 @@ export interface UserState {
   users: User[];
   filteredUserIds: string[];
   search: "";
+  loading: boolean;
 }
 
 export interface GetAllUsersResponse {
