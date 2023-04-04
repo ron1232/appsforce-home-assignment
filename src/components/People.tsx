@@ -74,7 +74,7 @@ const People = () => {
             variant="contained"
             color="primary"
           >
-            Create new user +
+            Add User
           </Button>
         </BottomSection>
       )}

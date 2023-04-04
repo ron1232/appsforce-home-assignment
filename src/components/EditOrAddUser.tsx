@@ -64,12 +64,18 @@ const EditOrAddUser: React.FC<EditOrAddUserProps> = ({
     let valid = true;
 
     if (name.length < 3) {
-      setNameError("Name must have 3 characters or more");
+      setNameError(
+        !name.length
+          ? "Name field cant be empty"
+          : "Name must have 3 characters or more"
+      );
       valid = false;
     }
 
     if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
-      setEmailError("Incorrect email format");
+      setEmailError(
+        !email.length ? "Email field can't be empty" : "Incorrect email format"
+      );
       valid = false;
     }
 
@@ -78,9 +84,18 @@ const EditOrAddUser: React.FC<EditOrAddUserProps> = ({
       valid = false;
     }
 
-    // If new user and picture not ending with image extension
-    if (!uuid && !/\.(gif|jpe?g|tiff?|png|webp|bmp)$/i.test(picture)) {
-      setPictureError("Picture must be an image url");
+    // If creating new user and picture is not url
+    if (
+      !uuid &&
+      !/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/i.test(
+        picture
+      )
+    ) {
+      setPictureError(
+        !picture.length
+          ? "Picture field can't be empty"
+          : "Picture must be a url"
+      );
       valid = false;
     }
 
