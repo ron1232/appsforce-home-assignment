@@ -9,7 +9,7 @@ export interface User extends UserCommon {
   uuid: string;
 }
 
-interface UserAxios extends UserCommon {
+export interface UserAxios extends UserCommon {
   name: {
     title: string;
     first: string;

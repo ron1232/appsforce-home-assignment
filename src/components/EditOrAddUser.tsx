@@ -49,6 +49,7 @@ const EditOrAddUser: React.FC<EditOrAddUserProps> = ({
       name: { state: setName, error: setNameError },
       email: { state: setEmail, error: setEmailError },
       location: { state: setLocation, error: setLocationError },
+      // If Creating new user:
       ...(!uuid && { picture: { state: setPicture, error: setPictureError } }),
     };
 
@@ -138,6 +139,8 @@ const EditOrAddUser: React.FC<EditOrAddUserProps> = ({
           }
         />
         {pictureError && <ErrorField text={pictureError} />}
+
+        {/* If Creating new user: */}
         {!uuid && (
           <StyledTextField
             label="Picture"
@@ -149,6 +152,7 @@ const EditOrAddUser: React.FC<EditOrAddUserProps> = ({
             }
           />
         )}
+
         <div>
           <Button
             onClick={() => setOpen(false)}
