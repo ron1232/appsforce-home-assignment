@@ -1,15 +1,19 @@
 import Person from "./Person";
 import { useEffect, useState } from "react";
-import { fetchUsers } from "../redux/actions/userActions";
+import { fetchUsers } from "../redux/async-actions/userAsyncActions";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import SearchFilter from "./SearchFilter";
 import { searchUser } from "../redux/slices/userSlice";
+import EditOrAddUser from "./EditOrAddUser";
 
 const People = () => {
   const dispatch = useAppDispatch();
+  const [openCreateUserModal, setOpenCreateUserModal] = useState(false);
 
-  const { filteredUserIds, users } = useAppSelector(
-    (state) => state.userReducer
+  const users = useAppSelector((state) => state.userReducer.users);
+
+  const filteredUserIds = useAppSelector(
+    (state) => state.userReducer.filteredUserIds
   );
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -30,11 +34,20 @@ const People = () => {
       />
       {users
         .filter((user) => {
-          return filteredUserIds.includes(user.login.uuid);
+          return filteredUserIds.includes(user.uuid);
         })
         .map((user) => (
-          <Person key={user.login.uuid} {...user} />
+          <Person key={user.uuid} {...user} />
         ))}
+      <button onClick={() => setOpenCreateUserModal(true)}>
+        Create new user
+      </button>
+      {openCreateUserModal && (
+        <EditOrAddUser
+          setOpen={setOpenCreateUserModal}
+          open={openCreateUserModal}
+        />
+      )}
     </>
   );
 };

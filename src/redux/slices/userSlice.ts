@@ -1,6 +1,7 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { fetchUsers } from "../actions/userActions";
-import { UserState } from "../../interfaces";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { fetchUsers } from "../async-actions/userAsyncActions";
+import { User, UserState } from "../../interfaces";
+import { deepClone } from "../../utils";
 
 const initialState: UserState = {
   users: [],
@@ -15,36 +16,59 @@ export const userSlice = createSlice({
     searchUser: (state, actions) => {
       const searchTerm = actions.payload;
 
-      if (!searchTerm)
-        state.filteredUserIds = state.users.map((user) => user.login.uuid);
+      state.search = searchTerm;
 
-      state.filteredUserIds = state.users
-        .filter((user) => {
-          return (
-            user.email.toLowerCase().includes(searchTerm) ||
-            `${user.name.title} ${user.name.first} ${user.name.last}`
-              .toLowerCase()
-              .includes(searchTerm) ||
-            user.login.uuid.toLowerCase().includes(searchTerm)
-          );
-        })
-        .map((user) => user.login.uuid);
+      if (!searchTerm)
+        state.filteredUserIds = state.users.map((user) => user.uuid);
+
+      state.filteredUserIds = getUserIdsBySearchTerm(state.users, searchTerm);
     },
-    saveUser: (state, actions) => {
-      // state.filter = actions.payload;
+    createUser: (state, action: PayloadAction<User>) => {
+      state.users = [...deepClone(state.users), action.payload];
+
+      if (state.search) {
+        state.filteredUserIds = getUserIdsBySearchTerm(
+          state.users,
+          state.search
+        );
+
+        return;
+      }
+
+      state.filteredUserIds = state.users.map((user) => user.uuid);
     },
-    editUser: (state, actions) => {
-      // state.filter = actions.payload;
+    editUser: (state, actions: PayloadAction<Omit<User, "picture">>) => {
+      state.users = state.users.map((user) => {
+        if (user.uuid === actions.payload.uuid) {
+          user.name = actions.payload.name;
+          user.email = actions.payload.email;
+          user.location = actions.payload.location;
+        }
+
+        return user;
+      });
     },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchUsers.fulfilled, (state, action) => {
       state.users = action.payload;
-      state.filteredUserIds = action.payload.map((user) => user.login.uuid);
+      state.filteredUserIds = action.payload.map((user) => user.uuid);
     });
   },
 });
 
-export const { searchUser } = userSlice.actions;
+export const { searchUser, createUser, editUser } = userSlice.actions;
 
 export default userSlice.reducer;
+
+const getUserIdsBySearchTerm = (users: User[], searchTerm: string) => {
+  return users
+    .filter((user) => {
+      return (
+        user.email.toLowerCase().includes(searchTerm) ||
+        `${user.name}`.toLowerCase().includes(searchTerm) ||
+        user.uuid.toLowerCase().includes(searchTerm)
+      );
+    })
+    .map((user) => user.uuid);
+};

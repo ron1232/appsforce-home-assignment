@@ -1,10 +1,20 @@
-export interface User {
+interface UserCommon {
+  email: string;
+}
+
+export interface User extends UserCommon {
+  name: string;
+  picture: string;
+  location: string;
+  uuid: string;
+}
+
+interface UserAxios extends UserCommon {
   name: {
     title: string;
     first: string;
     last: string;
   };
-  email: string;
   picture: {
     medium: string;
   };
@@ -28,7 +38,7 @@ export interface UserState {
 }
 
 export interface GetAllUsersResponse {
-  results: User[];
+  results: UserAxios[];
   info: {
     page: number;
     results: number;
