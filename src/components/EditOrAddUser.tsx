@@ -172,7 +172,7 @@ const EditOrAddUser: React.FC<EditOrAddUserProps> = ({
         <div>
           <Button
             onClick={() => setOpen(false)}
-            variant="contained"
+            variant="outlined"
             style={{ marginRight: "1rem" }}
           >
             Cancel
