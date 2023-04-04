@@ -40,7 +40,7 @@ const People = () => {
       <TopMenu>
         <Search>
           <StyledInputBase
-            placeholder="Search…"
+            placeholder="Search User…"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             inputProps={{ "aria-label": "search" }}
