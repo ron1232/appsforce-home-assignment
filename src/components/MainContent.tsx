@@ -1,4 +1,4 @@
-import Person from "./Person";
+import Person from "./User";
 import { useEffect, useState } from "react";
 import { fetchUsers } from "../redux/async-actions/userAsyncActions";
 import { useAppDispatch, useAppSelector } from "../redux/store";
@@ -17,7 +17,7 @@ import {
   TopTitle,
 } from "./StyledComponents";
 
-const People = () => {
+const MainContent = () => {
   const dispatch = useAppDispatch();
   const [openCreateUserModal, setOpenCreateUserModal] = useState(false);
 
@@ -88,4 +88,4 @@ const People = () => {
   );
 };
 
-export default People;
+export default MainContent;

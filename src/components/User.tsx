@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { User as PersonProps } from "../interfaces";
+import { User as UserProps } from "../interfaces";
 import EditOrAddUser from "./EditOrAddUser";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -10,7 +10,7 @@ import Text from "./Text";
 import { Seperator, TopCard } from "./StyledComponents";
 import DeleteUser from "./DeleteUser";
 
-const Person: React.FC<PersonProps> = ({
+const User: React.FC<UserProps> = ({
   email,
   location,
   uuid,
@@ -84,4 +84,4 @@ const Person: React.FC<PersonProps> = ({
   );
 };
 
-export default Person;
+export default User;
