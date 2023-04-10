@@ -85,8 +85,9 @@ const getUserIdsBySearchTerm = (users: User[], searchTerm: string) => {
     .filter((user) => {
       return (
         user.email.toLowerCase().includes(searchTerm) ||
-        `${user.name}`.toLowerCase().includes(searchTerm) ||
-        user.uuid.toLowerCase().includes(searchTerm)
+        user.name.toLowerCase().includes(searchTerm) ||
+        user.uuid.toLowerCase().includes(searchTerm) ||
+        user.location.toLowerCase().includes(searchTerm)
       );
     })
     .map((user) => user.uuid);

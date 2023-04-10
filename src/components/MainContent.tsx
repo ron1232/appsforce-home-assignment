@@ -1,4 +1,4 @@
-import Person from "./User";
+import User from "./User";
 import { useEffect, useState } from "react";
 import { fetchUsers } from "../redux/async-actions/userAsyncActions";
 import { useAppDispatch, useAppSelector } from "../redux/store";
@@ -62,7 +62,7 @@ const MainContent = () => {
                 return filteredUserIds.includes(user.uuid);
               })
               .map((user) => (
-                <Person key={user.uuid} {...user} />
+                <User key={user.uuid} {...user} />
               ))}
           </>
         )}
